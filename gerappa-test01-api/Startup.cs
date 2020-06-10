@@ -45,6 +45,9 @@ namespace gerappa_test01_api
             {
                 endpoints.MapControllers();
             });
+
+            app.UseCors(config =>
+                config.WithOrigins("http://localhost:3000"));
         }
 
         private static async Task<CosmosClientProvider> InitializeCosmosClientInstanceAsync(IConfiguration configuration)
