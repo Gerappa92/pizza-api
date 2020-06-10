@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace gerappa_test01_api.Models
 {
-    public class Pizza : CosmoEntity
+    public class Order : CosmoEntity
     {
-        public string Description { get; set; }
+        public Pizza Pizza { get; set; }
+        public Client Client { get; set; }
         public decimal Price { get; set; }
-        public bool Vegetarian { get; set; }
     }
 }

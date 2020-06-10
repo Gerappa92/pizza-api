@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Cosmos;
 using gerappa_test01_api.Services;
+using gerappa_test01_api.Data;
+using gerappa_test01_api.Models;
 
 namespace gerappa_test01_api
 {
@@ -28,8 +30,8 @@ namespace gerappa_test01_api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSingleton<ICosmosDbService>(InitializeCosmosClientInstanceAsync(Configuration).GetAwaiter().GetResult());
-
+            services.AddSingleton<ICosmosClientProvider>(InitializeCosmosClientInstanceAsync(Configuration).GetAwaiter().GetResult());
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,24 +54,31 @@ namespace gerappa_test01_api
             });
         }
 
-        private static async Task<CosmosDbService> InitializeCosmosClientInstanceAsync(IConfiguration configuration)
+        private static async Task<CosmosClientProvider> InitializeCosmosClientInstanceAsync(IConfiguration configuration)
         {
             var configurationSection = configuration.GetSection("CosmosDb");
             string databaseName = configurationSection.GetSection("DatabaseName").Value;
-            string containerName = configurationSection.GetSection("ContainerName").Value;
             string account = configurationSection.GetSection("Account").Value;
             string keyName = configurationSection.GetSection("KeyName").Value;
             string key = configuration[keyName];
 
-            Microsoft.Azure.Cosmos.Fluent.CosmosClientBuilder clientBuilder = new Microsoft.Azure.Cosmos.Fluent.CosmosClientBuilder(account, key);
-            Microsoft.Azure.Cosmos.CosmosClient client = clientBuilder
-                                .WithConnectionModeDirect()
-                                .Build();
-            CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
-            Microsoft.Azure.Cosmos.DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
-            await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
 
-            return cosmosDbService;
+            Microsoft.Azure.Cosmos.Fluent.CosmosClientBuilder clientBuilder = new Microsoft.Azure.Cosmos.Fluent.CosmosClientBuilder(account, key);
+            CosmosClient client = clientBuilder
+                                .WithConnectionModeDirect()
+                                .WithSerializerOptions(new CosmosSerializationOptions()
+                                {
+                                    IgnoreNullValues = true,
+                                    PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
+                                })
+                                .Build();
+
+            DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
+            await database.Database.CreateContainerIfNotExistsAsync(typeof(Client).Name.ToLower(), "/id");
+            await database.Database.CreateContainerIfNotExistsAsync(typeof(Pizza).Name.ToLower(), "/id");
+            await database.Database.CreateContainerIfNotExistsAsync(typeof(Order).Name.ToLower(), "/id");
+
+            return new CosmosClientProvider(client, databaseName);
         }
     }
 }
