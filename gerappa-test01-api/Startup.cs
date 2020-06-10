@@ -22,6 +22,7 @@ namespace gerappa_test01_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddControllers();
             services.AddSingleton<ICosmosClientProvider>(InitializeCosmosClientInstanceAsync(Configuration).GetAwaiter().GetResult());
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -30,6 +31,14 @@ namespace gerappa_test01_api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(config =>
+            {
+                config.WithOrigins("http://localhost:3000");
+                config.AllowAnyHeader();
+                config.AllowAnyMethod();
+
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -46,8 +55,7 @@ namespace gerappa_test01_api
                 endpoints.MapControllers();
             });
 
-            app.UseCors(config =>
-                config.WithOrigins("http://localhost:3000"));
+
         }
 
         private static async Task<CosmosClientProvider> InitializeCosmosClientInstanceAsync(IConfiguration configuration)
