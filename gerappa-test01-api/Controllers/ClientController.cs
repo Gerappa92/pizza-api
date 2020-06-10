@@ -8,17 +8,17 @@ namespace gerappa_test01_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PizzaController : ControllerBase, ICrud<Pizza>
+    public class ClientController : ControllerBase, ICrud<Client>
     {
-        private readonly IRepository<Pizza> _repository;
+        private readonly IRepository<Client> _repository;
 
-        public PizzaController(IRepository<Pizza> repository)
+        public ClientController(IRepository<Client> repository)
         {
-            this._repository = repository;
+            _repository = repository;
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] Pizza pizza)
+        public async Task<IActionResult> Create([FromBody] Client pizza)
         {
             pizza.Id = Guid.NewGuid().ToString();
             await _repository.Add(pizza);
@@ -39,7 +39,7 @@ namespace gerappa_test01_api.Controllers
             return Ok();
         }
 
-        public async Task<IActionResult> Update(Pizza entity)
+        public async Task<IActionResult> Update(Client entity)
         {
             await _repository.Update(entity);
             return Ok();

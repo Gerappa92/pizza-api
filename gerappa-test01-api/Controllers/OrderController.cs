@@ -1,24 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using gerappa_test01_api.Data;
 using gerappa_test01_api.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace gerappa_test01_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PizzaController : ControllerBase, ICrud<Pizza>
+    public class OrderController : ControllerBase, ICrud<Order>
     {
-        private readonly IRepository<Pizza> _repository;
+        private readonly IRepository<Order> _repository;
 
-        public PizzaController(IRepository<Pizza> repository)
+        public OrderController(IRepository<Order> repository)
         {
-            this._repository = repository;
+            _repository = repository;
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] Pizza pizza)
+        public async Task<IActionResult> Create([FromBody] Order pizza)
         {
             pizza.Id = Guid.NewGuid().ToString();
             await _repository.Add(pizza);
@@ -39,7 +42,7 @@ namespace gerappa_test01_api.Controllers
             return Ok();
         }
 
-        public async Task<IActionResult> Update(Pizza entity)
+        public async Task<IActionResult> Update(Order entity)
         {
             await _repository.Update(entity);
             return Ok();
