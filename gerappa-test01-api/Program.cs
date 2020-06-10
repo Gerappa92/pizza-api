@@ -31,7 +31,7 @@ namespace gerappa_test01_api
                     }
                     else
                     {
-                        throw new Exception("KeyVault endpoint cant4't be null or empty");
+                        throw new Exception("KeyVault endpoint can't be null or empty");
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -39,6 +39,6 @@ namespace gerappa_test01_api
                     webBuilder.UseStartup<Startup>();
                 });
 
-        private static string GetKeyVaultEndpoint() => Environment.GetEnvironmentVariable("KEYVAULT_ENDPOINT");
+        private static string GetKeyVaultEndpoint() => @"https://gerappa-test01-keys.vault.azure.net/";
     }
 }
