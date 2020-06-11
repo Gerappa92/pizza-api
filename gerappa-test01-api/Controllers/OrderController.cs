@@ -42,12 +42,14 @@ namespace gerappa_test01_api.Controllers
             return Ok();
         }
 
+        [HttpPut]
         public async Task<IActionResult> Update(Order entity)
         {
             await _repository.Update(entity);
             return Ok();
         }
 
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             var entities = await _repository.GetAll();

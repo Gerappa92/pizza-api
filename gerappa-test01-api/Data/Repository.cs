@@ -1,6 +1,11 @@
 ﻿using gerappa_test01_api.Models;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace gerappa_test01_api.Data
@@ -45,14 +50,35 @@ namespace gerappa_test01_api.Data
             }
         }
 
-        public Task<T> GetAll()
+        public async Task<IEnumerable<T>> GetAll()
         {
-            throw new NotImplementedException();
+            var items = this._container.GetItemLinqQueryable<T>().ToFeedIterator();
+            return await GetListAsync(items);
         }
 
         public async Task Update(T entity)
         {
             await this._container.UpsertItemAsync<T>(entity, new PartitionKey(entity.Id));
+        }
+
+        public async Task<IEnumerable<T>> Where(Expression<Func<T, bool>> expression)
+        {
+            var items = this._container.GetItemLinqQueryable<T>().Where(expression).ToFeedIterator();
+            return await GetListAsync(items);
+
+        }
+
+        private async Task<IEnumerable<T>> GetListAsync(FeedIterator<T> items)
+        {
+            List<T> result = new List<T>();
+            while (items.HasMoreResults)
+            {
+                foreach (var item in await items.ReadNextAsync())
+                {
+                    result.Add(item);
+                }
+            }
+            return result;
         }
     }
 }

@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "api/pizza/all",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "KEYVAULT_ENDPOINT": "https://gerappa-test01-keys.vault.azure.net/"
@@ -21,7 +21,7 @@
     "gerappa_test01_api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "api/pizza/all",
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",

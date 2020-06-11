@@ -39,12 +39,14 @@ namespace gerappa_test01_api.Controllers
             return Ok();
         }
 
-        public async Task<IActionResult> Update(Pizza entity)
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody]Pizza entity)
         {
             await _repository.Update(entity);
             return Ok();
         }
 
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             var entities = await _repository.GetAll();
