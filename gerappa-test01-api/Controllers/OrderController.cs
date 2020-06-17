@@ -21,11 +21,15 @@ namespace gerappa_test01_api.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] Order pizza)
+        public async Task<IActionResult> Create([FromBody] Order order)
         {
-            pizza.Id = Guid.NewGuid().ToString();
-            await _repository.Add(pizza);
-            return Ok(pizza);
+            order.Id = Guid.NewGuid().ToString();
+            order.OrderDate = DateTime.Now;
+            order.TotalPrice = order.Pizza.Price;
+            order.Name = $"{order.Pizza.Name} - {order.Client.Name}";
+
+            await _repository.Add(order);
+            return Ok(order);
         }
 
         [HttpGet("{id}")]

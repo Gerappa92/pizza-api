@@ -9,6 +9,9 @@ namespace gerappa_test01_api.Models
     {
         public Pizza Pizza { get; set; }
         public Client Client { get; set; }
-        public decimal Price { get; set; }
+        public DateTime OrderDate { get; set; }
+        public DateTime DeliveryDate { get; set; }
+        public bool IsDelivered { get; set; }
+        public decimal TotalPrice { get; set; }
     }
 }

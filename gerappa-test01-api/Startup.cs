@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Azure.Cosmos;
 using gerappa_test01_api.Data;
 using gerappa_test01_api.Models;
+using Newtonsoft;
 
 namespace gerappa_test01_api
 {
@@ -23,7 +24,7 @@ namespace gerappa_test01_api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddSingleton<ICosmosClientProvider>(InitializeCosmosClientInstanceAsync(Configuration).GetAwaiter().GetResult());
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
@@ -33,7 +34,7 @@ namespace gerappa_test01_api
         {
             app.UseCors(config =>
             {
-                config.WithOrigins("http://localhost:3000");
+                config.WithOrigins("http://localhost:3000", "https://jolly-moss-06dbe3f03.azurestaticapps.net");
                 config.AllowAnyHeader();
                 config.AllowAnyMethod();
 

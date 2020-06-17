@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using gerappa_test01_api.Data;
 using gerappa_test01_api.Models;
@@ -20,6 +21,12 @@ namespace gerappa_test01_api.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] Pizza pizza)
         {
+            var pizzaExist = await _repository.Where(x => x.Name == pizza.Name);
+            if (pizzaExist.Any())
+            {
+                return BadRequest(new { errorMsg = $"Pizza o nazwie \"{pizza.Name}\" już istnieje" });
+            }
+
             pizza.Id = Guid.NewGuid().ToString();
             await _repository.Add(pizza);
             return Ok(pizza);
@@ -51,6 +58,13 @@ namespace gerappa_test01_api.Controllers
         {
             var entities = await _repository.GetAll();
             return Ok(entities);
+        }
+
+        [HttpGet("names/{query}")]
+        public async Task<IActionResult> QueryNames(string query)
+        {
+            var withName = await _repository.Where(x => x.Name.ToLower().Contains(query.ToLower()));
+            return Ok(withName);
         }
     }
 }
